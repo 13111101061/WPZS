@@ -5,27 +5,13 @@ import Files from "@/pages/Files";
 import Shared from "@/pages/Shared";
 import Recent from "@/pages/Recent";
 import Storage from "@/pages/Storage";
+import OSSConfig from "@/pages/OSSConfig";
 import Login from "@/pages/Login";
-import { useState, useEffect, useContext } from "react";
+import { useState } from "react";
 import { AuthContext } from '@/contexts/authContext';
-import Sidebar from "@/components/Sidebar";
+import Layout from "@/components/Layout";
 import { ApiProvider } from '@/contexts/apiContext';
-
-// Protected route component
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useContext(AuthContext);
-  
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-  
-  return <div className="flex h-screen overflow-hidden">
-    <Sidebar />
-    <main className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 p-4">
-      {children}
-    </main>
-  </div>;
-};
+import { OSSProvider } from '@/contexts/ossContext';
 
 export default function App() {
   // 从localStorage初始化状态，解决刷新丢失问题
@@ -71,21 +57,26 @@ export default function App() {
       value={{ isAuthenticated, user, login, logout }}
     >
       <ApiProvider>
-        <Routes>
-          {/* 公共路由 */}
-          <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
-          <Route path="/login" element={<Login />} />
-          
-          {/* 受保护的路由 */}
-          <Route path="/dashboard" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-          <Route path="/files" element={<ProtectedRoute><Files /></ProtectedRoute>} />
-          <Route path="/shared" element={<ProtectedRoute><Shared /></ProtectedRoute>} />
-          <Route path="/recent" element={<ProtectedRoute><Recent /></ProtectedRoute>} />
-          <Route path="/storage" element={<ProtectedRoute><Storage /></ProtectedRoute>} />
-          
-          {/* 重定向所有其他路由到首页 */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <OSSProvider>
+          <Routes>
+            {/* 公共路由 */}
+            <Route path="/" element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LandingPage />} />
+            <Route path="/login" element={<Login />} />
+
+            {/* 受保护的路由 */}
+            <Route element={<Layout />}>
+              <Route path="/dashboard" element={<Home />} />
+              <Route path="/files" element={<Files />} />
+              <Route path="/shared" element={<Shared />} />
+              <Route path="/recent" element={<Recent />} />
+              <Route path="/oss-config" element={<OSSConfig />} />
+              <Route path="/storage" element={<Storage />} />
+            </Route>
+
+            {/* 重定向所有其他路由到首页 */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </OSSProvider>
       </ApiProvider>
     </AuthContext.Provider>
   );

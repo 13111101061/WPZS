@@ -23,7 +23,8 @@ const fileTypeData = [
   { name: "文档", value: 350, color: "#3b82f6" }, // 蓝色
   { name: "图片", value: 280, color: "#ec4899" }, // 粉色
   { name: "视频", value: 220, color: "#10b981" }, // 绿色
-  { name: "音频", value: 100, color: "#f59e0b" }, // 橙色{ name: "其他", value: 50, color: "#6b7280" }, // 灰色
+  { name: "音频", value: 100, color: "#f59e0b" }, // 橙色
+  { name: "其他", value: 50, color: "#6b7280" }, // 灰色
 ];
 
 // 存储使用明细数据
