@@ -8,7 +8,12 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(git pull:*)"
-    ]
-  }
+      "Bash(git pull:*)",
+      "Bash(ls:*)",
+      "Edit"
+    ],
+    "deny": [],
+    "ask": []
+  },
+  "outputStyle": "Structural Thinking"
 }

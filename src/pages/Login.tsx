@@ -2,12 +2,6 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "@/contexts/authContext";
 import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-
-// --- DESIGN SYSTEM: "MODERN ENTERPRISE SAAS" ---
-// Keywords: Trust, Clarity, Efficiency, Professionalism.
-// Palette: Slate, Navy, Clean White, Subtle Gray.
-// Layout: Split Screen (Classic Enterprise Pattern).
 
 const Login = () => {
   const { login } = useContext(AuthContext);
@@ -18,11 +12,13 @@ const Login = () => {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-
+  
+  // 处理表单输入变化
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // 清除对应字段的错误
     if (errors[name]) {
       setErrors(prev => {
         const newErrors = { ...prev };
@@ -31,223 +27,193 @@ const Login = () => {
       });
     }
   };
-
+  
+  // 表单验证
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!formData.username.trim()) newErrors.username = "请输入用户名";
-    if (!formData.password) {
-      newErrors.password = "请输入密码";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "密码长度至少为6位";
+    
+    if (!formData.username.trim()) {
+      newErrors.username = "用户名不能为空";
     }
+    
+    if (!formData.password) {
+      newErrors.password = "密码不能为空";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "密码长度不能少于6个字符";
+    }
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
+  
+  // 处理表单提交
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
-
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     setIsLoading(true);
-    // Simulate API call
+    
+    // 模拟登录请求延迟
     setTimeout(() => {
       try {
+        // 调用AuthContext中的登录方法
         login(formData.username, formData.password);
+        // 登录成功后重定向到主页
         navigate("/");
       } catch (error) {
-        setErrors({ general: "登录失败，请检查您的凭证" });
+        setErrors({ general: "登录失败，请检查用户名和密码" });
         setIsLoading(false);
       }
-    }, 1000);
+    }, 1200);
   };
-
+  
   return (
-    <div className="w-full h-screen flex overflow-hidden bg-white">
-      
-      {/* --- LEFT COLUMN: BRAND & MARKETING (The "Enterprise Trust" Area) --- */}
-      <div className="hidden lg:flex w-1/2 bg-slate-900 relative flex-col justify-between p-12 text-white">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
-          <svg className="absolute top-0 right-0 opacity-10 transform translate-x-1/3 -translate-y-1/4 w-[800px] h-[800px]" viewBox="0 0 100 100" fill="none">
-             <circle cx="50" cy="50" r="50" stroke="white" strokeWidth="0.5" />
-             <circle cx="50" cy="50" r="35" stroke="white" strokeWidth="0.5" />
-             <circle cx="50" cy="50" r="20" stroke="white" strokeWidth="0.5" />
-          </svg>
-        </div>
-
-        {/* Logo Area */}
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-900/50">
-            <i className="fa-solid fa-layer-group text-white text-lg"></i>
-          </div>
-          <span className="text-xl font-bold tracking-tight">Nexus Enterprise</span>
-        </div>
-
-        {/* Testimonial / Value Prop */}
-        <div className="relative z-10 max-w-lg">
-          <blockquote className="space-y-6">
-            <p className="text-2xl font-medium leading-relaxed text-slate-100">
-              "这个平台彻底改变了我们处理数据聚合的方式。它不仅是一个工具，更是企业数字化转型的基础设施。"
-            </p>
-            <footer className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600">
-                <span className="text-sm font-bold">JD</span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        {/* 登录卡片 */}
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700 transform transition-all duration-500 hover:shadow-2xl">
+          <div className="p-8 space-y-6">
+            {/* 品牌标识和标题 */}
+            <div className="text-center space-y-2">
+              <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <i className="fa-solid fa-cloud text-white text-2xl"></i>
               </div>
-              <div>
-                <div className="font-semibold text-white">Jane Doe</div>
-                <div className="text-sm text-slate-400">CTO, TechGlobal Inc.</div>
-              </div>
-            </footer>
-          </blockquote>
-        </div>
-
-        {/* Footer */}
-        <div className="relative z-10 text-sm text-slate-500">
-          © 2024 Nexus Enterprise System. All rights reserved.
-        </div>
-      </div>
-
-      {/* --- RIGHT COLUMN: LOGIN FORM (The "Clean Utility" Area) --- */}
-      <div className="flex-1 flex flex-col justify-center items-center p-8 lg:p-12 bg-gray-50/50">
-        <div className="w-full max-w-md space-y-8">
-          
-          {/* Header */}
-          <div className="text-center lg:text-left space-y-2">
-            <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-              欢迎回来
-            </h1>
-            <p className="text-slate-500">
-              请输入您的账户凭证以访问工作台
-            </p>
-          </div>
-
-          {/* Form Container */}
-          <div className="bg-white p-8 rounded-xl border border-gray-200 shadow-sm">
-            {/* Global Error */}
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">云存储网盘</h1>
+              <p className="text-gray-600 dark:text-gray-300">登录您的账户以继续</p>
+            </div>
+            
+            {/* 错误提示 */}
             {errors.general && (
-              <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm flex items-center gap-2">
-                <i className="fa-solid fa-circle-exclamation"></i>
-                {errors.general}
+              <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg flex items-start gap-2 animate-in fade-in slide-in-from-top-1 duration-300">
+                <i className="fa-solid fa-exclamation-circle mt-0.5"></i>
+                <span className="text-sm">{errors.general}</span>
               </div>
             )}
-
-            <form onSubmit={handleSubmit} className="space-y-5">
-              
-              {/* Username */}
-              <div className="space-y-1.5">
-                <label className="block text-sm font-semibold text-slate-700" htmlFor="username">
-                  用户名 / 工作邮箱
+            
+            {/* 登录表单 */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* 用户名输入框 */}
+              <div className="space-y-2">
+                <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  用户名
                 </label>
-                <input
-                  id="username"
-                  name="username"
-                  type="text"
-                  autoComplete="username"
-                  className={cn(
-                    "block w-full px-4 py-2.5 bg-white border rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all",
-                    errors.username 
-                      ? "border-red-300 focus:ring-red-100 focus:border-red-500" 
-                      : "border-gray-300 focus:ring-blue-100 focus:border-blue-600 hover:border-gray-400"
-                  )}
-                  placeholder="name@company.com"
-                  value={formData.username}
-                  onChange={handleChange}
-                />
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i className="fa-solid fa-user text-gray-400"></i>
+                  </div>
+                  <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    autoComplete="username"
+                    required
+                    className={cn(
+                      "block w-full pl-10 pr-4 py-3 border rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:outline-none transition-all duration-200",
+                      errors.username 
+                        ? "border-red-300 dark:border-red-700 focus:ring-red-500" 
+                        : "border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+                    )}
+                    placeholder="输入用户名"
+                    value={formData.username}
+                    onChange={handleChange}
+                  />
+                </div>
                 {errors.username && (
-                  <p className="text-xs text-red-600 mt-1">{errors.username}</p>
+                  <p className="text-red-600 dark:text-red-400 text-sm flex items-center gap-1 animate-in fade-in slide-in-from-top-1 duration-300">
+                    <i className="fa-solid fa-exclamation-circle text-xs"></i> {errors.username}
+                  </p>
                 )}
               </div>
-
-              {/* Password */}
-              <div className="space-y-1.5">
+              
+              {/* 密码输入框 */}
+              <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <label className="block text-sm font-semibold text-slate-700" htmlFor="password">
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
                     密码
                   </label>
-                  <a href="#" className="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline">
+                  <a href="#" className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
                     忘记密码?
                   </a>
                 </div>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  className={cn(
-                    "block w-full px-4 py-2.5 bg-white border rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-offset-0 transition-all",
-                    errors.password 
-                      ? "border-red-300 focus:ring-red-100 focus:border-red-500" 
-                      : "border-gray-300 focus:ring-blue-100 focus:border-blue-600 hover:border-gray-400"
-                  )}
-                  placeholder="请输入您的密码"
-                  value={formData.password}
-                  onChange={handleChange}
-                />
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i className="fa-solid fa-lock text-gray-400"></i>
+                  </div>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    className={cn(
+                      "block w-full pl-10 pr-4 py-3 border rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white focus:ring-2 focus:outline-none transition-all duration-200",
+                      errors.password 
+                        ? "border-red-300 dark:border-red-700 focus:ring-red-500" 
+                        : "border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+                    )}
+                    placeholder="输入密码"
+                    value={formData.password}
+                    onChange={handleChange}
+                  />
+                </div>
                 {errors.password && (
-                  <p className="text-xs text-red-600 mt-1">{errors.password}</p>
+                  <p className="text-red-600 dark:text-red-400 text-sm flex items-center gap-1 animate-in fade-in slide-in-from-top-1 duration-300">
+                    <i className="fa-solid fa-exclamation-circle text-xs"></i> {errors.password}
+                  </p>
                 )}
               </div>
-
-              {/* Remember Me */}
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-600 cursor-pointer select-none">
-                  记住我的登录状态
-                </label>
-              </div>
-
-              {/* Submit Button */}
+              
+              {/* 登录按钮 */}
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 disabled:opacity-70 disabled:cursor-not-allowed transition-colors"
+                className="w-full flex justify-center items-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
-                  <span className="flex items-center gap-2">
-                    <i className="fa-solid fa-circle-notch fa-spin text-xs"></i>
-                    登录中...
-                  </span>
-                ) : "安全登录"}
+                  <>
+                    <i className="fa-solid fa-spinner fa-spin"></i>
+                    <span>登录中...</span>
+                  </>
+                ) : (
+                  <>
+                    <i className="fa-solid fa-sign-in-alt"></i>
+                    <span>登录</span>
+                  </>
+                )}
               </button>
             </form>
-
-            {/* Divider */}
-            <div className="mt-8 relative">
+            
+            {/* 分隔线 */}
+            <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200"></div>
+                <div className="w-full border-t border-gray-300 dark:border-gray-700"></div>
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-slate-500">
-                  或使用企业SSO登录
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white dark:bg-gray-800 px-2 text-gray-500 dark:text-gray-400">
+                  或者
                 </span>
               </div>
             </div>
-
-            {/* SSO Buttons */}
-            <div className="mt-6 grid grid-cols-2 gap-3">
-              <button className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-slate-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors">
-                <i className="fa-brands fa-microsoft text-lg"></i>
-                <span>Microsoft</span>
-              </button>
-              <button className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-slate-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200 transition-colors">
-                <i className="fa-brands fa-google text-lg"></i>
-                <span>Google</span>
-              </button>
+            
+            {/* 注册选项 */}
+            <div className="text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                还没有账户?{" "}
+                <a href="#" className="font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-200">
+                  创建账户
+                </a>
+              </p>
             </div>
           </div>
-          
-          <p className="text-center text-xs text-slate-400">
-            遇到问题? 请联系 <a href="#" className="underline hover:text-slate-600">IT 支持部门</a>
-          </p>
         </div>
+        
+        {/* 页脚 */}
+        <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
+          © 2023 云存储网盘. 保留所有权利.
+        </p>
       </div>
     </div>
   );
