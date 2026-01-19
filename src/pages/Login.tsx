@@ -93,7 +93,7 @@ const Login = () => {
         </div>
 
         <div className="relative z-10 text-sm text-slate-500">
-          © 2024 Nexus Enterprise System. All rights reserved.
+          © 2026 Nexus Enterprise System. All rights reserved.
         </div>
       </div>
 
@@ -105,7 +105,7 @@ const Login = () => {
               欢迎回来
             </h1>
             <p className="text-slate-500">
-              请输入您的账户凭证以访问工作台
+              请输入您的账户凭证以访问工作台(此为展示版本可随意输入6位数，实际使用请自行部署使用)
             </p>
           </div>
 
